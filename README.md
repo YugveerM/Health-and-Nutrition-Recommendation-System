@@ -1,8 +1,3 @@
-Here is the **full, clean, copy-paste-ready `README.md` file** for your GitHub project **Health-and-Nutrition-Recommendation-System**:
-
----
-
-````markdown
 # 🥗 Health & Nutrition Recommendation System
 
 A Python-based project that provides personalized health and nutrition recommendations using user data and structured datasets.  
@@ -14,6 +9,7 @@ This system is designed to help individuals understand their health metrics and 
 
 - [Introduction](#introduction)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Dataset Description](#dataset-description)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
@@ -36,11 +32,34 @@ It is ideal for beginners learning data analysis, machine learning basics, or cr
 
 ## ⭐ Features
 
-✔ Accepts user details such as age, gender, weight, diet preferences, and health conditions.  
-✔ Processes real health and nutrition dataset (`health_nutrition_data.csv`).  
-✔ Recommends improvements in diet, nutrition, and lifestyle.  
-✔ Generates output instantly through a Python script.  
-✔ Easily customizable for new datasets or enhanced logic.
+✔ User authentication system (Signup + Login)  
+✔ Accepts user details such as age, gender, weight, height, diet preferences, and health conditions  
+✔ Real-time deficiency & overnutrition detection  
+✔ Interactive nutrition dashboard using **Chart.js**  
+✔ PDF report generation using **jsPDF**  
+✔ Fully responsive UI with modern gradients and glassmorphism  
+✔ Easy to customize and extend for ML or API-based recommendations  
+
+---
+
+## 🖼 Screenshots
+
+Add your screenshots inside an **images/** folder in the repository.
+
+### 🔐 Login Page  
+<img width="1823" height="906" alt="Screenshot 2025-11-17 112808" src="https://github.com/user-attachments/assets/7dc7a605-d0db-4d8e-ae06-0807ffed6e51" />
+
+
+### 🏠 Dashboard  
+<img width="1880" height="912" alt="Screenshot 2025-11-17 112827" src="https://github.com/user-attachments/assets/73f11ff9-3bd3-48f9-9434-e32751f12567" />
+
+
+### 📊 Recommendation Page  
+<img width="1876" height="913" alt="Screenshot 2025-11-17 113000" src="https://github.com/user-attachments/assets/d85e82f3-4802-48ad-b231-c6a6b36cb401" />
+
+
+> Make sure your folder structure contains:  
+> `Health-and-Nutrition-Recommendation-System/images/`
 
 ---
 
@@ -50,34 +69,36 @@ The dataset folder contains:
 
 | File | Description |
 |------|-------------|
-| **health_nutrition_data.csv** | Contains nutrition and health metrics used for generating recommendations. |
-| **users.csv** | Sample user data for testing the system. |
+| **health_nutrition_data.csv** | Nutrition and health dataset used to generate baseline comparisons |
+| **users.csv** | Sample user entries for testing |
 
-You can replace this dataset with your own to improve model accuracy.
+You can replace these datasets with your custom data for improved accuracy.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Python 3.x**
-- **Pandas** – data manipulation  
-- **NumPy** – numerical operations  
-- *(Optional)* **scikit-learn** – to expand into ML-based recommendations  
-- **CSV datasets**  
+- **Python 3.x**  
+- **Flask** — Backend web framework  
+- **SQLAlchemy** — Database ORM  
+- **SQLite / MySQL** (configurable)  
+- **Chart.js** — Graphs  
+- **jsPDF** — PDF export  
+- **Pandas & NumPy** — Data processing  
+- **HTML / CSS / JavaScript** — Frontend interface  
 
 ---
 
 ## 🧩 Installation
 
-Follow the steps below to run the project on your system:
+### 1️⃣ Clone the repository
 
-### 1️⃣ Clone the repository  
 ```bash
 git clone https://github.com/YugveerM/Health-and-Nutrition-Recommendation-System.git
 cd Health-and-Nutrition-Recommendation-System
-````
+```
 
-### 2️⃣ Create a virtual environment (optional but recommended)
+### 2️⃣ Create a virtual environment (optional)
 
 ```bash
 python -m venv venv
@@ -86,30 +107,41 @@ venv\Scripts\activate   # Windows
 source venv/bin/activate   # macOS/Linux
 ```
 
-### 3️⃣ Install required libraries
+### 3️⃣ Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> If requirements.txt is missing, manually install:
-> `pip install pandas numpy`
+If requirements.txt is missing, install manually:
+
+```bash
+pip install flask pandas numpy sqlalchemy
+```
 
 ---
 
 ## ▶ Usage
 
-Run the main script:
+To start the Flask application:
 
 ```bash
-python main.py
+python app.py
 ```
 
-The system will:
+Then open your browser and go to:
 
-1. Ask for user inputs OR read from `users.csv`.
-2. Process the dataset.
-3. Generate health & nutrition recommendations.
+```
+http://127.0.0.1:5000/
+```
+
+### The system provides:
+
+1. Secure user login  
+2. Input form for nutrition values  
+3. Instant health analysis  
+4. Chart-based visual comparison of ideal vs. actual intake  
+5. Downloadable PDF report  
 
 ---
 
@@ -118,67 +150,86 @@ The system will:
 ```
 Health-and-Nutrition-Recommendation-System/
 │
-├── health_nutrition_data.csv        # Dataset for nutrition & health metrics
-├── users.csv                        # Sample user input data
-├── main.py                          # Main program
-├── tempCodeRunnerFile.py            # Temporary debugger file
-└── README.md                        # Project documentation
+├── app.py                           # Flask backend
+├── health_nutrition_data.csv         # Dataset
+├── users.csv                         # Sample users
+├── templates/
+│   ├── login.html
+│   ├── signup.html
+│   ├── recommendation.html
+│
+├── static/
+│   ├── style.css                     # (Optional external CSS)
+│   ├── script.js                     # (Optional external JS)
+│
+├── images/                           # Screenshot folder
+│   ├── login_page.png
+│   ├── dashboard_page.png
+│   ├── recommendation_page.png
+│
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
 ## 🧬 How the Recommendation System Works
 
-1. **User Input**
-   The script gathers data such as height, weight, age, and dietary preferences.
+### 1️⃣ User Inputs  
+The user enters:
 
-2. **Data Processing**
+- Age  
+- Gender  
+- Height & weight  
+- Daily calorie intake  
+- Protein, carbs, fats  
+- Exercise hours  
+- Water intake  
 
-   * Reads `health_nutrition_data.csv`
-   * Cleans the dataset
-   * Normalizes required columns
+### 2️⃣ Data Processing  
+- BMI calculation  
+- Energy balance  
+- Macro-level comparison  
+- Hydration & activity analysis  
 
-3. **Recommendation Logic**
-   Based on comparisons such as:
+### 3️⃣ Recommendation Engine  
+Based on deficiencies or excessive values, the system suggests:
 
-   * Ideal BMI ranges
-   * Recommended calorie intake
-   * Macronutrient distribution
-   * Lifestyle habits
+- Increase/Reduce calories  
+- Improve protein, carb, or fat balance  
+- Lifestyle fixes  
+- Hydration advice  
+- BMI improvement tips  
 
-   The system outputs tailored suggestions like:
-
-   * Increase protein intake
-   * Reduce carbs
-   * Drink more water
-   * Follow a balanced diet plan
-
-4. **Output**
-   Clean and easy-to-understand health improvement insights.
+### 4️⃣ Output  
+- Clean list of recommendations  
+- Bar chart (ideal vs. actual)  
+- PDF output with tips + chart  
 
 ---
 
 ## 🚀 Future Improvements
 
-You can enhance the project with:
-
-* Adding a **machine learning model** (clustering or classification)
-* Building a **web interface using Flask or Streamlit**
-* Adding **image-based food recognition**
-* Creating a **mobile application**
-* Storing user data in **SQL or Firebase**
+- Add a **Machine Learning model** for smarter predictions  
+- Connect to **Wearable devices / APIs**  
+- Build a **mobile app (Flutter / React Native)**  
+- Create an **admin dashboard**  
+- Add **user history tracking**  
+- Create a **diet plan generator**  
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!
+Contributions, suggestions, and improvements are always welcome!
 
-1. Fork the repository
-2. Create a new branch
-3. Commit your changes
-4. Push the branch
-5. Create a Pull Request
+### Steps:
+
+1. Fork this repository  
+2. Create a new branch  
+3. Add your changes  
+4. Commit & push  
+5. Create a Pull Request 🎉  
 
 ---
 
@@ -190,15 +241,8 @@ This project is licensed under the **MIT License**.
 
 ## 👨‍💻 Author
 
-**Yugveer Mehndiratta**
+**Yugveer Mehndiratta**  
 GitHub: [YugveerM](https://github.com/YugveerM)
 
 ---
 
-If you want, I can also generate:
-
-✅ A better README with images and badges
-✅ A version including logo, screenshots, or diagrams
-✅ A PDF version of this README
-
-Just tell me!
