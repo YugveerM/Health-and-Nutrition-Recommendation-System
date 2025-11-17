@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signup | Health & Nutrition</title>
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.signup-box {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(15px);
+  padding: 40px 50px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+  width: 340px;
+  text-align: center;
+}
+h2 {
+  color: #00d4ff;
+  margin-bottom: 25px;
+  text-shadow: 0 0 10px #00d4ff;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: #2c2c2c;
+  color: #fff;
+  outline: none;
+  font-size: 1rem;
+}
+input:focus {
+  background: #333;
+  box-shadow: 0 0 6px #00d4ff;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #00d4ff, #00b8e6);
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+button:hover {
+  transform: scale(1.05);
+}
+a {
+  color: #00d4ff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+.error { color: #ff6b6b; margin-top: 10px; }
+</style>
+</head>
+
+<body>
+  <div class="signup-box">
+    <h2>🧍‍♂️ Sign Up</h2>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+      <input type="text" name="username" placeholder="Create username" required>
+      <input type="password" name="password" placeholder="Create password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+  </div>
+</body>
+</html>

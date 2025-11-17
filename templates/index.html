@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Health & Nutrition Recommendation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* === Reset & Base === */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+/* === Logout Button === */
+.logout-btn {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background: linear-gradient(135deg, #004e92, #000428);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+.logout-btn:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  transform: translateY(-2px);
+}
+/* === Container === */
+.container {
+  width: 95%;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 70px;
+}
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 25px;
+  width: 48%;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+.card:hover { transform: translateY(-5px); }
+h1 {
+  text-align: center;
+  color: #00d4ff;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #00d4ff;
+}
+/* === Input Form === */
+form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+input, select, button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+}
+input, select {
+  background: #2c2c2c;
+  color: white;
+}
+button {
+  background: linear-gradient(90deg, #00d4ff, #0072ff);
+  color: black;
+  font-weight: 600;
+  grid-column: span 2;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover { transform: scale(1.05); }
+/* === Recommendations === */
+.recommendations {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+.recommendations li { margin-bottom: 8px; }
+.recommendations strong { color: #00ffff; font-weight: 700; }
+/* === Chart === */
+.chart-container {
+  margin-top: 30px;
+  width: 100%;
+  height: 400px;
+}
+canvas { width: 100% !important; height: 400px !important; }
+/* === Download Button === */
+.download-btn {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: black;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s;
+}
+.download-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #00e6ff, #008cff);
+}
+</style>
+</head>
+<body>
+<a href="{{ url_for('logout') }}" class="logout-btn">Logout ({{ session['user'] }})</a>
+
+<h1>Health & Nutrition Recommendation</h1>
+
+<div class="container">
+  <!-- Input Form -->
+  <div class="card">
+    <h2>Enter Your Details</h2>
+    <form method="POST">
+      <input type="number" name="age" placeholder="Age" required>
+      <select name="gender" required>
+        <option value="">Select Gender</option>
+        <option value="male" {% if user_input.get('gender')=='male' %}selected{% endif %}>Male</option>
+        <option value="female" {% if user_input.get('gender')=='female' %}selected{% endif %}>Female</option>
+      </select>
+      <input type="number" name="weight_kg" placeholder="Weight (kg)" step="0.1" required>
+      <input type="number" name="height_cm" placeholder="Height (cm)" step="0.1" required>
+      <input type="number" name="daily_calories" placeholder="Calories per day" required>
+      <input type="number" name="protein_g" placeholder="Protein (g)" required>
+      <input type="number" name="carbs_g" placeholder="Carbs (g)" required>
+      <input type="number" name="fat_g" placeholder="Fat (g)" required>
+      <input type="number" name="exercise_hours" placeholder="Exercise (hrs/week)" step="0.1" required>
+      <input type="number" name="water_liters" placeholder="Water (L/day)" step="0.1" required>
+      <button type="submit">Get Recommendation</button>
+    </form>
+
+    {% if recommendations %}
+    <div class="recommendations" id="recommendations-section">
+      <h3>Recommendations:</h3>
+      <ul>
+        {% for rec in recommendations %}
+          <li><details open><summary>Tip {{ loop.index }}</summary>
+            {{ rec | replace("Increase", "<strong>Increase</strong>")
+                    | replace("Reduce", "<strong>Reduce</strong>")
+                    | replace("Add", "<strong>Add</strong>")
+                    | replace("Avoid", "<strong>Avoid</strong>")
+                    | replace("Lower", "<strong>Lower</strong>")
+                    | replace("Balanced", "<strong>Balanced</strong>")
+                    | replace("Overnutrition", "<strong>Overnutrition</strong>")
+                    | replace("Deficiency", "<strong>Deficiency</strong>")
+                    | safe }}
+          </details></li>
+        {% endfor %}
+      </ul>
+      <button class="download-btn" id="downloadPdfBtn">📄 Download PDF</button>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Graph -->
+  <div class="card">
+    <h2>Nutrition Overview</h2>
+    <div class="chart-container">
+      <canvas id="nutritionChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('nutritionChart').getContext('2d');
+
+// Ideal Values
+const idealData = { daily_calories: 2500, protein_g: 100, carbs_g: 300, fat_g: 70 };
+const userData = {
+  daily_calories: {{ user_input.get('daily_calories', 2500) }},
+  protein_g: {{ user_input.get('protein_g', 100) }},
+  carbs_g: {{ user_input.get('carbs_g', 300) }},
+  fat_g: {{ user_input.get('fat_g', 70) }},
+};
+
+// Bar Chart
+const chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Calories', 'Protein', 'Carbs', 'Fat'],
+    datasets: [
+      { label: 'Ideal', data: Object.values(idealData),
+        backgroundColor: 'rgba(0, 255, 255, 0.5)', borderColor: '#00ffff', borderWidth: 1 },
+      { label: 'Your Intake', data: Object.values(userData),
+        backgroundColor: 'rgba(255, 99, 132, 0.5)', borderColor: '#ff6384', borderWidth: 1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.2)' } },
+      x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+    },
+    plugins: {
+      legend: { labels: { color: '#fff' } },
+      title: { display: true, text: 'Deficiency & Overnutrition Overview', color: '#00d4ff' }
+    }
+  }
+});
+
+// ✅ PDF generation with chart
+document.getElementById("downloadPdfBtn")?.addEventListener("click", async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(18);
+  pdf.text("Health & Nutrition Recommendations", 15, 20);
+  
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(12);
+  
+  let y = 35;
+  const tips = document.querySelectorAll("#recommendations-section details");
+  tips.forEach((tip, i) => {
+    const summary = tip.querySelector("summary").innerText;
+    const content = tip.innerText.replace(summary, "").trim();
+    
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`${summary}:`, 15, y);
+    y += 8;
+    
+    pdf.setFont("helvetica", "normal");
+    const lines = pdf.splitTextToSize(content, 180);
+    pdf.text(lines, 15, y);
+    y += lines.length * 6 + 5;
+    
+    if (y > 250) {
+      pdf.addPage();
+      y = 20;
+    }
+  });
+
+  // Add chart image
+  const chartCanvas = document.getElementById("nutritionChart");
+  const chartImage = chartCanvas.toDataURL("image/png", 1.0);
+  pdf.addPage();
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Nutrition Overview Chart", 15, 20);
+  pdf.addImage(chartImage, "PNG", 15, 30, 180, 100);
+
+  pdf.save("Health_Nutrition_Tips.pdf");
+});
+</script>
+</body>
+</html>
